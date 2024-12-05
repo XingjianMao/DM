@@ -1,9 +1,9 @@
 # Search of an FD Graph
 
 ## 4.2.1 Pruning
-Our functional dependency method is based on a mutual information/entropy approach to search for functional dependency. This method focuses on calculating the mutual information of column pairs in the dataset, and we set a mutual information threshold of 0.975. If the mutual information of two columns is greater than 0.975, they are considered functionally dependent, as described in reference [18].
+Our functional dependency method is based on a mutual information/entropy approach to search for functional dependency. This method focuses on calculating the mutual information of column pairs in the dataset, and we set a mutual information threshold of 0.975. If the mutual information of two columns is greater than 0.975, they are considered functionally dependent, as described in reference [1].
 
-We also follow the same pruning steps as in [18]:
+We also follow the same pruning steps as in [1]:
 - First, we prune columns that have only one or two distinct values.
 - For columns with a large number of distinct values, we use a constant ε3 ∈ [0,1] for pruning. We set ε3 to 0.95.
 
