@@ -1,11 +1,15 @@
 # Search of an FD Graph
 
 ## 4.2.1 Pruning
-Our functional dependency method is based on a mutual information/entropy approach to search for functional dependency. This method focuses on calculating the mutual information of column pairs in the dataset, and we set a mutual information threshold of 0.975. If the mutual dependence information of two columns is bigger than 0.975, then it is considered functional dependent, which is the same in reference [18]. We also follow the same prune step: first, we prune the columns that have the number of distinct values of one or two. And the ones with several distinct values that are too big, we use the same method as [18], set a constant 𝜖3 ∈ [0,1] for pruning. We set 𝜖3 to 0.95.
+Our functional dependency method is based on a mutual information/entropy approach to search for functional dependency. This method focuses on calculating the mutual information of column pairs in the dataset, and we set a mutual information threshold of 0.975. If the mutual information of two columns is greater than 0.975, they are considered functionally dependent, as described in reference [18].
+
+We also follow the same pruning steps as in [18]:
+- First, we prune columns that have only one or two distinct values.
+- For columns with a large number of distinct values, we use a constant ε3 ∈ [0,1] for pruning. We set ε3 to 0.95.
 
 ### Algorithm 1: Pruning before FD Search
 
-```plaintext
+```
 Get total number of rows |R| in the dataset
 for each column Ci in the dataset do
     Get distinct values for Ci from the dictionary
@@ -13,19 +17,20 @@ for each column Ci in the dataset do
         Prune Ci
         continue
     end if
-    if |Ci| > (1 - 𝜖3) · |R| then
+    if |Ci| > (1 - ε3) · |R| then
         Prune Ci
         continue
     end if
 end for
-
+```
 
 ## 4.2.2 Pruning FD Search
-After pruning, we perform the original algorithm from [1] to find functional dependency, except that we don’t use the Chao Shen entropy as [1] did. We randomly sample 10000 rows from the original dataset and calculate the exact mutual information.
+After pruning, we perform the original algorithm from [1] to find functional dependencies, except that we do not use the Chao Shen entropy as in [1]. Instead, we randomly sample 10,000 rows from the original dataset and calculate the exact mutual information.
 
 ### Algorithm 2: FD Search
-plaintext
-for all possible pairs (Ci, Cj) in the dataset sample (after prune) do
+
+```
+for all possible pairs (Ci, Cj) in the dataset sample (after pruning) do
     for i = 0 to n do
         Get val1 from Ci
         Get val2 from Cj
@@ -41,13 +46,14 @@ for all possible pairs (Ci, Cj) in the dataset sample (after prune) do
     hP_c = COENTROPY(freqCi,Cj)
     ωc_i,Cj = (hc_i + hc_j - hP_c)/hc_j
     ωc_j,Ci = (hc_i + hc_j - hP_c)/hc_i
-    if (ωc_i,Cj ≥ X)or(ωc_j,Ci ≥ X) then
+    if (ωc_i,Cj ≥ X) or (ωc_j,Ci ≥ X) then
         Pair (Ci, Cj) is added to functional dependency
     end if
 end for
+```
+
+## References
+
+[1] Marcus Paradies, Christian Lemke, Hasso Plattner, Wolfgang Lehner, Kai-Uwe Sattler, Alexander Zeier, and Jens Krueger. 2010. How to juggle columns. Proceedings of the Fourteenth International Database Engineering & Applications Symposium on - IDEAS '10 (2010). [https://doi.org/10.1145/1](https://doi.org/10.1145/1)
 
 
-[1]Marcus Paradies, Christian Lemke, Hasso Plattner, Wolfgang Lehner, Kai-Uwe
-Sattler, Alexander Zeier, and Jens Krueger. 2010. How to juggle columns. Pro-
-ceedings of the Fourteenth International Database Engineering amp; Applications
-Symposium on - IDEAS ’10 (2010). https://doi.org/10.1145/1866480.1866510
