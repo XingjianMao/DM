@@ -20,10 +20,10 @@ for each column Ci in the dataset do
 end for
 
 
-4.2.2 FD Search
-After pruning, we perform the original algorithm of [18] to find functional dependency, except that we don’t use the Chao Shen entropy as [18] did. We randomly sample 10000 rows from the original dataset and calculate the exact mutual information.
+## 4.2.2 Pruning FD Search
+After pruning, we perform the original algorithm from [1] to find functional dependency, except that we don’t use the Chao Shen entropy as [1] did. We randomly sample 10000 rows from the original dataset and calculate the exact mutual information.
 
-Algorithm 2: FD Search
+### Algorithm 2: FD Search
 plaintext
 for all possible pairs (Ci, Cj) in the dataset sample (after prune) do
     for i = 0 to n do
@@ -45,3 +45,9 @@ for all possible pairs (Ci, Cj) in the dataset sample (after prune) do
         Pair (Ci, Cj) is added to functional dependency
     end if
 end for
+
+
+[1]Marcus Paradies, Christian Lemke, Hasso Plattner, Wolfgang Lehner, Kai-Uwe
+Sattler, Alexander Zeier, and Jens Krueger. 2010. How to juggle columns. Pro-
+ceedings of the Fourteenth International Database Engineering amp; Applications
+Symposium on - IDEAS ’10 (2010). https://doi.org/10.1145/1866480.1866510
