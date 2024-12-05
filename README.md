@@ -52,8 +52,15 @@ for all possible pairs (Ci, Cj) in the dataset sample (after pruning) do
 end for
 ```
 
+## NP hard
+The problem of searching for functional dependencies is considered NP-hard because it involves evaluating all possible pairs of columns in the dataset to determine whether a functional dependency exists. As the number of columns increases, the number of possible pairs grows exponentialy, leading to an exponential number of combinations to evaluate in the worst case.
+
+Moreover, calculating mutual information for each pair is computationally intensive, especially for large datasets with numerous rows and distinct values. The complexity is further exacerbated by the entropy calculations and the co-occurrence frequency evaluations required for each pair. This combination of exhaustive pairwise evaluation and complex computations makes the problem computationally infeasible to solve optimally within polynomial time for large datasets, thus categorizing it as NP-hard.
+
 ## References
 
 [1] Marcus Paradies, Christian Lemke, Hasso Plattner, Wolfgang Lehner, Kai-Uwe Sattler, Alexander Zeier, and Jens Krueger. 2010. How to juggle columns. Proceedings of the Fourteenth International Database Engineering & Applications Symposium on - IDEAS '10 (2010). [https://doi.org/10.1145/1](https://doi.org/10.1145/1)
+
+
 
 
