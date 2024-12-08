@@ -1,65 +1,59 @@
-# Search of an FD Graph
+# Proof: Maximum Reachability Problem (MRP) is NP-hard
 
-## 4.2.1 Pruning
-Our functional dependency method is based on a mutual information/entropy approach to search for functional dependency. This method focuses on calculating the mutual information of column pairs in the dataset, and we set a mutual information threshold of 0.975. If the mutual information of two columns is greater than 0.975, they are considered functionally dependent, as described in reference [1].
+## Lemma 3.1: MRP is NP-hard
 
-We also follow the same pruning steps as in [1]:
-- First, we prune columns that have only one or two distinct values.
-- For columns with a large number of distinct values, we use a constant ε3 ∈ [0,1] for pruning. We set ε3 to 0.95.
+We prove this by reduction from the Maximum Coverage Problem (MCP), which is known to be NP-hard. 
 
-### Algorithm 1: Pruning before FD Search
+In MCP, given:
+- A universe **U** of elements
+- A collection of subsets **S₁, S₂, ..., Sₙ** of **U**
+- An integer **K**
 
-```
-Get total number of rows |R| in the dataset
-for each column Ci in the dataset do
-    Get distinct values for Ci from the dictionary
-    if |Ci| < 3 then
-        Prune Ci
-        continue
-    end if
-    if |Ci| > (1 - ε3) · |R| then
-        Prune Ci
-        continue
-    end if
-end for
-```
+The goal is to select at most **K** subsets so that the number of covered elements is maximized.
 
-## 4.2.2 Pruning FD Search
-After pruning, we perform the original algorithm from [1] to find functional dependencies, except that we do not use the Chao Shen entropy as in [1]. Instead, we randomly sample 10,000 rows from the original dataset and calculate the exact mutual information.
+### Construction for Reduction:
+1. **Mapping**:
+   - Construct a directed graph **G = (V, E)** where:
+     - Each element in **U** is represented as a vertex in **V**
+     - For each subset **Sᵢ** in MCP, create a vertex **vᵢ** in **V**
+     - Add a directed edge from vertex **vᵢ** to vertex **vⱼ** if element **j** in **U** belongs to subset **Sᵢ**
+   - The objective in the MRP is to select **K** vertices **V'** ⊆ **V** such that the number of vertices reachable from **V'** is maximized, which correlates directly to covering elements in MCP.
 
-### Algorithm 2: FD Search
+### Correctness:
+1. **Completeness**:
+   - If selecting subsets **Sᵢ₁, Sᵢ₂, ..., Sᵢₖ** covers the maximum number of elements in **U** in MCP, then selecting vertices **vᵢ₁, vᵢ₂, ..., vᵢₖ** in **G** maximizes the reachability to other vertices.
+2. **Soundness**:
+   - Conversely, if a set of vertices **V'** in **G** maximizes the number of reachable vertices, then the corresponding subsets in MCP would cover a maximum number of elements in **U**.
 
-```
-for all possible pairs (Ci, Cj) in the dataset sample (after pruning) do
-    for i = 0 to n do
-        Get val1 from Ci
-        Get val2 from Cj
-        Update freqCi with val1
-        Update freqCj with val2
-        Update freqCi,Cj with val1 and val2
-        if |freqCi,Cj| > (1 + X) · max{|Ci|, |Cj|} then
-            break
-        end if
-    end for
-    hc_i = ENTROPY(freqCi)
-    hc_j = ENTROPY(freqCj)
-    hP_c = COENTROPY(freqCi,Cj)
-    ωc_i,Cj = (hc_i + hc_j - hP_c)/hc_j
-    ωc_j,Ci = (hc_i + hc_j - hP_c)/hc_i
-    if (ωc_i,Cj ≥ X) or (ωc_j,Ci ≥ X) then
-        Pair (Ci, Cj) is added to functional dependency
-    end if
-end for
-```
+Therefore, solving the MRP is at least as hard as solving MCP. Since MCP is NP-hard, by polynomial-time reduction, the **MRP is also NP-hard**.
 
-## NP hard
-The problem of searching for functional dependencies is considered NP-hard because it involves evaluating all possible pairs of columns in the dataset to determine whether a functional dependency exists. As the number of columns increases, the number of possible pairs grows exponentialy, leading to an exponential number of combinations to evaluate in the worst case.
+---
 
-Moreover, calculating mutual information for each pair is computationally intensive, especially for large datasets with numerous rows and distinct values. The complexity is further exacerbated by the entropy calculations and the co-occurrence frequency evaluations required for each pair. This combination of exhaustive pairwise evaluation and complex computations makes the problem computationally infeasible to solve optimally within polynomial time for large datasets, thus categorizing it as NP-hard.
+### Alternate Framing: Budgeted Maximum Set Cover Problem
 
-## References
+The Budgeted Maximum Set Cover Problem (BMSCP) is defined as follows:
+- A universe set **U** comprises **n** elements, each assigned a utility value.
+- A collection **S** contains several subsets of **U**, each with an associated cost.
+- Given a budget **B**, the problem seeks to identify the smallest subset of **S** that maximizes the total utilities of the covered elements while keeping the total cost within **B**.
 
-[1] Marcus Paradies, Christian Lemke, Hasso Plattner, Wolfgang Lehner, Kai-Uwe Sattler, Alexander Zeier, and Jens Krueger. 2010. How to juggle columns. Proceedings of the Fourteenth International Database Engineering & Applications Symposium on - IDEAS '10 (2010). [https://doi.org/10.1145/1](https://doi.org/10.1145/1)
+### Relation to Maximum Reachability Problem:
+- Treat the vertex set **V** as the universe set **U**.
+- View each node as a set comprising all its reachable nodes. These sets collectively represent **S**.
+- Assume:
+  - Each node has a utility of 1.
+  - The cost to acquire each set in **S** is also 1.
+- The goal is to select fewer than **B** nodes such that the union of their expanded sets yields the maximum total utility.
+
+Consequently, the Maximum Reachability Problem (MRP) can be framed as a **Budgeted Maximum Set Cover Problem**, which is also **NP-hard**.
+
+
+
+
+
+[11]Alberto Caprara, Paolo Toth, and Matteo Fischetti. 2000. Algorithms for the set
+covering problem. Annals of Operations Research 98, 1 (2000), 353–371.
+[19]Samir Khuller, Anna Moss, and Joseph Seffi Naor. 1999. The budgeted maximum
+coverage problem. Information processing letters 70, 1 (1999), 39–45
 
 
 
